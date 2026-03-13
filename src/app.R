@@ -3,7 +3,19 @@ library(bslib)
 library(dplyr)
 library(plotly)
 
-close_df <- read.csv("data/close.csv", stringsAsFactors = FALSE)
+data_candidates <- c(
+  file.path("data", "close.csv"),
+  file.path("..", "data", "close.csv")
+)
+data_path <- data_candidates[file.exists(data_candidates)][1]
+if (is.na(data_path)) {
+  stop(
+    "Required data file 'data/close.csv' not found. Searched: ",
+    paste(data_candidates, collapse = ", ")
+  )
+}
+data_path <- normalizePath(data_path, winslash = "/", mustWork = TRUE)
+close_df <- read.csv(data_path, stringsAsFactors = FALSE)
 close_df$Date <- as.Date(close_df$Date)
 
 DATE_MIN <- min(close_df$Date, na.rm = TRUE)
